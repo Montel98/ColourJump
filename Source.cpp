@@ -16,15 +16,12 @@
 const GLchar* vertexSource = R"glsl(
     #version 150 core
     in vec3 position;
-    in vec3 color;
-    out vec3 Color;
     uniform mat4 view;
     uniform mat4 proj;
 	uniform mat4 model;
 
     void main()
     {	
-        Color = color;
         gl_Position = proj * view * model * vec4(position, 1.0);
     }
 )glsl";
@@ -32,23 +29,15 @@ const GLchar* vertexSource = R"glsl(
 // FRAGMENT SHADER
 const GLchar* fragmentSource = R"glsl(
     #version 150 core
-	uniform vec3 blockColor;
-    in vec3 Color;
-    out vec4 outColor;
+	uniform vec3 blockColour;
+	out vec4 outColour;
     void main()
     {
 		float ambientMag = 1.0;
-		vec3 resultLight = ambientMag * blockColor;
-        outColor = vec4(resultLight, 1.0);
+		vec3 resultLight = ambientMag * blockColour;
+        outColour = vec4(resultLight, 1.0);
     }
 )glsl";
-
-void render(glm::vec3 position, GLuint uniModel, glm::mat4 &model) {
-	glm::mat4 translate = glm::translate(glm::mat4(1.0f), position);
-	glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model)); //send matrix to the vertex shader
-	glDrawElements(GL_TRIANGLES, 42, GL_UNSIGNED_INT, 0);
-	model = glm::mat4(1.0f); // reset to identity matrix for next object
-}
 
 int main(int argc, char *args[]) {
 	SDL_Init(SDL_INIT_VIDEO);
@@ -75,14 +64,14 @@ int main(int argc, char *args[]) {
 	glGenBuffers(1, &vbo);
 
 	GLfloat vertices[] = {
-		0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, //0 CUBE
-		0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, //1
-		0.5f, 0.0f, 0.5f, 0.0f, 1.0f, 1.0f, //2
-		0.0f, 0.0f, 0.5f, 0.0f, 1.0f, 1.0f, //3
-		0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, //4
-		0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, //5
-		0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 1.0f, //6
-		0.0f, 0.5f, 0.5f, 0.0f, 1.0f, 1.0f, //7
+		0.0f, 0.0f, 0.0f, //0 CUBE
+		0.5f, 0.0f, 0.0f, //1
+		0.5f, 0.0f, 0.5f, //2
+		0.0f, 0.0f, 0.5f, //3
+		0.0f, 0.5f, 0.0f, //4
+		0.5f, 0.5f, 0.0f, //5
+		0.5f, 0.5f, 0.5f, //6
+		0.0f, 0.5f, 0.5f  //7
 	};
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -119,39 +108,24 @@ int main(int argc, char *args[]) {
 	GLuint shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);
-	glBindFragDataLocation(shaderProgram, 0, "outColor");
+	glBindFragDataLocation(shaderProgram, 0, "outColour");
 	glLinkProgram(shaderProgram);
 	glUseProgram(shaderProgram);
 
 	// Specify the layout of the vertex data
 	GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
 	glEnableVertexAttribArray(posAttrib);
-	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0);
+	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
 
-	GLint colAttrib = glGetAttribLocation(shaderProgram, "color");
-	glEnableVertexAttribArray(colAttrib);
-	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE,
-		6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-
-	// set camera
-	glm::vec3 cam_pos(-2.0f, -2.0f, 1.5f);
-	glm::vec3 looking(0.0f, 0.0f, 0.0f);
-	glm::mat4 view = glm::lookAt(
-		cam_pos,
-		looking,
-		glm::vec3(0.0f, 0.0f, 1.0f)
-	);
-	glm::mat4 trans = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
+	// get reference of view matrix for upload
 	GLint uniView = glGetUniformLocation(shaderProgram, "view");
-	//glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
 
-	// set projection matrix
+	// set projection matrix and get reference for upload
 	glm::mat4 proj = glm::perspective(glm::radians(45.0f), 1500.0f / 1500.0f, 1.0f, 100.0f);
 	GLint uniProj = glGetUniformLocation(shaderProgram, "proj");
 	glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
 
-	// set falling motion
+	// set model matrix and get reference for upload
 	glm::mat4 model = glm::mat4(1.0f);
 	GLint uniModel = glGetUniformLocation(shaderProgram, "model");
 	glUniformMatrix4fv(uniModel, 1, GL_FALSE, glm::value_ptr(model));
@@ -159,13 +133,12 @@ int main(int argc, char *args[]) {
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 	SDL_SetRelativeMouseMode(SDL_TRUE);
-	//SDL_ShowCursor(SDL_DISABLE);
 
-	GLint uniColor = glGetUniformLocation(shaderProgram, "blockColor");
-	//auto t_start = std::chrono::high_resolution_clock::now();
+	GLint uniColour = glGetUniformLocation(shaderProgram, "blockColour");
+
 	WorldTime wt;
 	Camera camera(glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	Renderer r(uniModel, uniColor, uniView, model);
+	Renderer r(uniModel, uniColour, uniView, model);
 	levelMap m(16, wt);
 	Player player(0.0f, 0.0f, 2.0f);
 	player.initMotionSpeeds(2.0f, 3.5f);
@@ -174,20 +147,9 @@ int main(int argc, char *args[]) {
 	glm::vec3 direction;
 
 	while (true) {
-		glm::mat4 view = glm::lookAt(
-			cam_pos,
-			looking,
-			glm::vec3(0.0f, 0.0f, 1.0f)
-		);
-		direction = looking - cam_pos;
-		glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
-		//glUniform3f(uniColor, 0.0f, 0.0f, 1.0f);
-
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		c.updateStates(camera);
-
-		const Uint8* state = SDL_GetKeyboardState(NULL);
 		SDL_GL_SwapWindow(window);
 	}
 	SDL_GL_DeleteContext(context);
