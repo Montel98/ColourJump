@@ -27,30 +27,35 @@ Overlap CollisionController::getMinOverlap(Entity* entity) {
 	glm::vec3 displacements[] = { glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f) };
 	physicsComponent &pPos = player.getPhysicsComponent();
 	physicsComponent &tPos = entity->getPhysicsComponent();
-	float offset = 0.000001f;
+	float offset = 0.000001f; // offset from collision point
 
+	//x
+	// If x velocity is positive, entity can only possibly hit lower x face
 	if (pPos.velocity.x > 0) {
 		overlaps[0].displacement = (tPos.position.x + entity->getCollisionBox().xMin) - (pPos.position.x + player.getCollisionBox().xMax) - offset;
 	}
+	// If x velocity is negative, entity can only possibly hit upper x face
 	else if (pPos.velocity.x < 0) {
 		overlaps[0].displacement = (tPos.position.x + entity->getCollisionBox().xMax) - (pPos.position.x + player.getCollisionBox().xMin) + offset;
 	}
 
 	//y
-
+	// If y velocity is positive, entity can only possibly hit lower y face
 	if (pPos.velocity.y > 0) {
 		overlaps[1].displacement = (tPos.position.y + entity->getCollisionBox().yMin) - (pPos.position.y + player.getCollisionBox().yMax) - offset;
 	}
+	// If y velocity is negative, entity can only possibly hit upper y face
 	else if (pPos.velocity.y < 0) {
 		overlaps[1].displacement = (tPos.position.y + entity->getCollisionBox().yMax) - (pPos.position.y + player.getCollisionBox().yMin) + offset;
 	}
 
 	//z
-
+	// If y velocity is positive, entity can only possibly hit lower z face
 	if (pPos.velocity.z > 0) {
 		overlaps[2].displacement = (tPos.position.z + entity->getCollisionBox().zMin) - (pPos.position.z + player.getCollisionBox().zMax) - offset;
 	}
-	else if (pPos.velocity.z < 0) {
+	// If y velocity is negative, entity can only possibly hit upper z face
+	else if (pPos.velocity.z <= 0) {
 		overlaps[2].displacement = (tPos.position.z + entity->getCollisionBox().zMax) - (pPos.position.z + player.getCollisionBox().zMin) + offset;
 	}
 
@@ -98,8 +103,7 @@ void CollisionController::handleCollision(Entity* entity) {
 		if (isValidCollision(entity, overlap)) {
 			glm::vec3 normal = getSurfaceNormal(entity, overlap);
 			glm::vec3 displacement(0.0f);
-			//std::cout << overlap.axis << std::endl;
-			//std::cout << overlap.displacement << std::endl;
+
 			if (overlap.axis == 'X') {
 				player.getPhysicsComponent().position.x += overlap.displacement;
 			}
@@ -116,10 +120,10 @@ void CollisionController::handleCollision(Entity* entity) {
 
 void CollisionController::checkCollisions(levelMap& map) {
 	int offsets[] = { -1, 0, 1 };
-	for (int x = 0; x < 3; ++x) {
-		for (int y = 0; y < 3; ++y) {
+	for (unsigned int x = 0; x < 3; ++x) {
+		for (unsigned int y = 0; y < 3; ++y) {
 			if (x + player.sectorX < map.objects.size() && y + player.sectorY < map.objects[0].size()) {
-				handleCollision(map.objects[x + player.sectorX][y + player.sectorY]);
+				handleCollision(&map.objects[x + player.sectorX][y + player.sectorY]);
 			}
 		}
 	}

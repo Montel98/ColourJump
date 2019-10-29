@@ -8,10 +8,28 @@
 class WorldTime {
 private:
 	std::chrono::time_point<std::chrono::high_resolution_clock> tStart;
-	float tPrev;
+	mutable float tPrev;
 public:
 	WorldTime();
-	float getElapsedTime();
+	float getDeltaTime() const;
+	float getElapasedTime() const;
+};
+
+class Timer {
+private:
+	WorldTime & time;
+	float duration;
+	float tStart;
+	mutable float tCurrent;
+	bool active;
+public:
+	Timer(WorldTime&);
+	Timer(WorldTime&, float);
+	void Start();
+	void reset();
+	void setDuration(float);
+	bool isFinished() const;
+	bool isActive() const;
 };
 
 #endif

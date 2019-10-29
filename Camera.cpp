@@ -4,10 +4,11 @@
 
 Camera::Camera(glm::vec3 position, glm::vec3 facing, glm::vec3 upwards) : pos(position), looking(facing), up(upwards) {
 	direction = looking - pos;
+	sensitivity = 0.002f;
 }
 
 void Camera::rotateH(float angle) {
-	glm::mat4 rot = glm::rotate(glm::mat4(1.0f), (-1 * angle * 0.005f), up);
+	glm::mat4 rot = glm::rotate(glm::mat4(1.0f), (-1 * angle), up);
 	glm::vec4 bla1(direction, 1);
 	bla1 = rot * bla1;
 
@@ -19,7 +20,7 @@ void Camera::rotateH(float angle) {
 }
 
 void Camera::rotateV(float angle) {
-	glm::mat4 rot = glm::rotate(glm::mat4(1.0f), (-1 * angle * 0.005f), glm::cross(direction, up));
+	glm::mat4 rot = glm::rotate(glm::mat4(1.0f), (-1 * angle), glm::cross(direction, up));
 	glm::vec4 bla(direction, 1);
 	bla = rot * bla;
 

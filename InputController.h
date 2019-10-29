@@ -5,6 +5,7 @@
 
 #include "Player.h"
 #include "Camera.h"
+#include "WorldTime.h"
 #include <Map>
 #include <SDL.h>
 
@@ -19,9 +20,12 @@ private:
 public:
 	InputController(Player&, Camera&);
 	void ProcessInputs(float);
+	bool isWalking;
 	glm::vec3 jumping;
 	glm::vec3 vel;
 	glm::vec3 lastDir;
+	float cameraBobPos;
+	float start;
 	float vMag;
 };
 

@@ -3,17 +3,30 @@
 #include "LevelMap.h"
 #include "block.h"
 
-levelMap::levelMap(int dimension) {
-	for (int x = 0; x < dimension; ++x) {
-		std::vector<Entity*>newRow;
+#define TILE_SIZE 2
+
+levelMap::levelMap(int size, WorldTime &wt) : dimension(size) {
+	int colour;
+	for (int x = 0; x < size; ++x) {
+		std::vector<Block>newRow;
 		objects.push_back(newRow);
 		for (int y = 0; y < dimension; ++y) {
-			int color = rand() % 7;
-			objects[x].push_back(new Block(color, 0.5f * x, 0.5f * y, 0));
-			if (color != 6) {
-				//objects[x].back()->getPhysicsComponent().velocity = glm::vec3(0.0f, 0.0f, 10.0f);
-				//objects[x].back()->getPhysicsComponent().addComponent(new glm::vec3(0.0f, 0.0f, -9.8f));
-			}
+			colour = 0;
+			objects[x].push_back(Block(colour, 0.5f * x, 0.5f * y, 0, wt));
+		}
+	}
+
+	setRandomColours();
+}
+
+void levelMap::setRandomColours() {
+	for (int x = 0; x < dimension; x += TILE_SIZE) {
+		for (int y = 0; y < dimension; y += TILE_SIZE) {
+			int colour = rand() % 8;
+			objects[x][y].setColour(colour);
+			objects[x + 1][y].setColour(colour);
+			objects[x][y + 1].setColour(colour);
+			objects[x + 1][y + 1].setColour(colour);
 		}
 	}
 }

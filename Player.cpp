@@ -16,3 +16,8 @@ void Player::updateSector() {
 	sectorX = floor(getPhysicsComponent().position.x / 0.5f);
 	sectorY = floor(getPhysicsComponent().position.y / 0.5f);
 }
+
+void Player::initMotionSpeeds(float wSpeed, float rSpeed) {
+	walkingSpeed = wSpeed;
+	runningSpeed = rSpeed;
+}

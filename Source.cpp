@@ -23,7 +23,7 @@ const GLchar* vertexSource = R"glsl(
 	uniform mat4 model;
 
     void main()
-    {
+    {	
         Color = color;
         gl_Position = proj * view * model * vec4(position, 1.0);
     }
@@ -37,7 +37,9 @@ const GLchar* fragmentSource = R"glsl(
     out vec4 outColor;
     void main()
     {
-        outColor = vec4(blockColor, 1.0);
+		float ambientMag = 1.0;
+		vec3 resultLight = ambientMag * blockColor;
+        outColor = vec4(resultLight, 1.0);
     }
 )glsl";
 
@@ -140,7 +142,7 @@ int main(int argc, char *args[]) {
 		glm::vec3(0.0f, 0.0f, 1.0f)
 	);
 	glm::mat4 trans = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	//view = trans * view;
+
 	GLint uniView = glGetUniformLocation(shaderProgram, "view");
 	//glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
 
@@ -164,11 +166,13 @@ int main(int argc, char *args[]) {
 	WorldTime wt;
 	Camera camera(glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	Renderer r(uniModel, uniColor, uniView, model);
-	levelMap m(20);
-	Player player(0.0f, 0.0f, 1.0f);
+	levelMap m(16, wt);
+	Player player(0.0f, 0.0f, 2.0f);
+	player.initMotionSpeeds(2.0f, 3.5f);
 	InputController ic(player, camera);
-	Controller c(m, r, player, ic);
+	Controller c(m, r, player, ic, wt);
 	glm::vec3 direction;
+
 	while (true) {
 		glm::mat4 view = glm::lookAt(
 			cam_pos,
@@ -181,7 +185,7 @@ int main(int argc, char *args[]) {
 
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		c.updateStates(wt, camera);
+		c.updateStates(camera);
 
 		const Uint8* state = SDL_GetKeyboardState(NULL);
 		SDL_GL_SwapWindow(window);

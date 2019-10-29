@@ -9,11 +9,16 @@
 
 class Entity {
 public:
+	bool gravityEnabled;
+	bool isDestroyed;
+
 	Entity(float, float, float);
 	physicsComponent state;
 	CollisionBox cBox;
 	virtual void act() = 0;
 	virtual int get_block_ID() const = 0;
+	bool isGravityEnabled() { return gravityEnabled; }
+
 	physicsComponent& getPhysicsComponent() {
 		return state;
 	}

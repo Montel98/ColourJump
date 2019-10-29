@@ -11,19 +11,27 @@
 #include "InputController.h"
 #include "CollisionController.h"
 #include "WorldTime.h"
+#include "round.h"
 #include <iostream>
+#include <map>
+#include <string>
 
 class Controller {
 private:
 	levelMap &map;
 	Renderer &renderer;
 	Player &player;
+	WorldTime &time;
 	InputController &inputController;
+	Round round;
 	float dt;
+	int roundNumber;
+	int blockVal;
+	int prevBlockVal;
 
 public:
-	Controller(levelMap&, Renderer&, Player&, InputController&);
-	void updateStates(WorldTime &time, Camera &camera);
+	Controller(levelMap&, Renderer&, Player&, InputController&, WorldTime&);
+	void updateStates(Camera &camera);
 	void draw(Entity*, Camera&);
 };
 

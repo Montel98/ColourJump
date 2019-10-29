@@ -11,19 +11,23 @@ void InputController::ProcessInputs(float dt) {
 	if (SDL_PollEvent(&userEvent)) {
 	}
 
-	vel.x = vel.y = vel.z = 0;
+	vel.x = vel.y = vel.z = 0; // reset walking velocity vector
 
-	float vMax = 2.0f;
+	float vMax = player.walkingSpeed;
 	float acceleration = 8.0f;
+
+	// Set movement vectors to be on axis relative to current direction facing
 	glm::vec3 dirW(player.direction.x, player.direction.y, 0);
 	glm::vec3 dirS(-1 * player.direction.x, -1 * player.direction.y, 0);
 	glm::vec3 dirD(glm::cross(glm::vec3(player.direction.x, player.direction.y, 0), glm::vec3(0.0f, 0.0f, 1.0f)));
 	glm::vec3 dirA(glm::cross(glm::vec3(-1 * player.direction.x, -1 * player.direction.y, 0), glm::vec3(0.0f, 0.0f, 1.0f)));
 
+	// run
 	if (state[SDL_SCANCODE_LSHIFT]) {
-		vMax = 3.0f;
+		vMax = player.runningSpeed;
 	}
 
+	// Extert a momentary jumping force
 	if (state[SDL_SCANCODE_SPACE]) {
 		if (!player.isJumping) {
 			player.getPhysicsComponent().addComponent(&jumping);
@@ -31,6 +35,7 @@ void InputController::ProcessInputs(float dt) {
 		}
 	}
 
+	// Remove jumping force if z velocity exceeds 3
 	if (player.isJumping && player.getPhysicsComponent().velocity.z >= 3) {
 		player.getPhysicsComponent().velocity.z = 3;
 		player.getPhysicsComponent().removeComponent(&jumping);
@@ -68,8 +73,10 @@ void InputController::ProcessInputs(float dt) {
 		vel.x = vel.x / glm::length(vel);
 		vel.y = vel.y / glm::length(vel);
 	}
+
 	vMag += acceleration * dt;
 
+	// Lock player's walking velocity to vMax
 	if (vMag <= vMax) {
 		player.getPhysicsComponent().velocity.x = vel.x * vMag;
 		player.getPhysicsComponent().velocity.y = vel.y * vMag;
@@ -78,8 +85,10 @@ void InputController::ProcessInputs(float dt) {
 		player.getPhysicsComponent().velocity.x = vel.x * vMax;
 		player.getPhysicsComponent().velocity.y = vel.y * vMax;
 	}
+
+	// Stop running
 	if (!state[SDL_SCANCODE_W] && !state[SDL_SCANCODE_A] && !state[SDL_SCANCODE_S] && !state[SDL_SCANCODE_D]) {
-		release = true;
+		isWalking = false;
 		vMag = 0.0f;
 	}
 
@@ -87,7 +96,7 @@ void InputController::ProcessInputs(float dt) {
 	Uint32 mouseState = SDL_GetRelativeMouseState(&x, &y);
 
 	//look left/right
-	glm::mat4 rot = glm::rotate(glm::mat4(1.0f), (-1 * x * 0.005f), glm::vec3(0, 0, 1));
+	glm::mat4 rot = glm::rotate(glm::mat4(1.0f), (-1 * x * camera.sensitivity), glm::vec3(0, 0, 1));
 	glm::vec4 bla1(player.direction, 1);
 	bla1 = rot * bla1;
 
@@ -96,7 +105,7 @@ void InputController::ProcessInputs(float dt) {
 	player.direction.z = bla1.z;
 
 	//look up/down
-	glm::mat4 rot1 = glm::rotate(glm::mat4(1.0f), (-1 * y * 0.005f), glm::cross(player.direction, glm::vec3(0, 0, 1)));
+	glm::mat4 rot1 = glm::rotate(glm::mat4(1.0f), (-1 * y * camera.sensitivity), glm::cross(player.direction, glm::vec3(0, 0, 1)));
 	glm::vec4 bla(player.direction, 1);
 	bla = rot1 * bla;
 
