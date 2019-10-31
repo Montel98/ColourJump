@@ -8,6 +8,7 @@ bool CollisionController::unhandledCollisions() {
 	return collisions.size() > 0;
 }
 
+// Determine if player is within collision box bounds of entity
 bool CollisionController::isCollision(Entity* entity) {
 	physicsComponent &pPos = player.getPhysicsComponent();
 
@@ -59,6 +60,7 @@ Overlap CollisionController::getMinOverlap(Entity* entity) {
 		overlaps[2].displacement = (tPos.position.z + entity->getCollisionBox().zMax) - (pPos.position.z + player.getCollisionBox().zMin) + offset;
 	}
 
+	// find component with lowest overlap during collision
 	Overlap& min_overlap = overlaps[0];
 	for (int c = 0; c < 3; ++c) {
 		if (abs(min_overlap.displacement) > abs(overlaps[c].displacement)) {
@@ -68,6 +70,7 @@ Overlap CollisionController::getMinOverlap(Entity* entity) {
 	return min_overlap;
 }
 
+// Returns the surface normal of the face that collided with the player
 glm::vec3 CollisionController::getSurfaceNormal(Entity* entity, Overlap& overlap) {
 	if (overlap.axis == 'X') {
 		if (player.getPhysicsComponent().velocity.x > 0) {
@@ -97,6 +100,8 @@ glm::vec3 CollisionController::getSurfaceNormal(Entity* entity, Overlap& overlap
 	}
 }
 
+// Determines axis with smallest overlap during collision
+// Corrects the player's to be slightly out of collision zone
 void CollisionController::handleCollision(Entity* entity) {
 	if (isCollision(entity)) {
 		Overlap overlap = getMinOverlap(entity);
@@ -118,6 +123,7 @@ void CollisionController::handleCollision(Entity* entity) {
 	}
 }
 
+// Check adjacent 9 cells for collisions
 void CollisionController::checkCollisions(levelMap& map) {
 	int offsets[] = { -1, 0, 1 };
 	for (unsigned int x = 0; x < 3; ++x) {

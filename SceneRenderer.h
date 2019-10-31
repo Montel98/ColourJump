@@ -11,14 +11,20 @@
 #define SCENERENDERER_H
 
 class SceneRenderer {
-public:
-	GLuint uniView, uniProj, uniModel, uniLightPos, uniLightColour;
+private:
+	GLuint uniView, uniProj, uniModel, uniLightPos, uniLightColour; // Handles to all shader uniforms
 	GLuint vertexShader, fragmentShader;
-	GLuint shaderProgram;
+	GLuint shaderProgram; // Handle to shader program
 	glm::vec3 lightPos, lightColour;
-	glm::mat4 proj, model;
+	glm::mat4 proj, model; // Model and projection matrices
 
+public:
 	SceneRenderer();
+	void setSpotLightPostion();
+
+	// CubeRenderer and SceneRenderer are tightly coupled
+	// CubeRenderer needs access the private handles
+	friend class CubeRenderer;
 };
 
 #endif

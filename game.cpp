@@ -47,7 +47,7 @@ void Controller::updateStates(Camera &camera) {
 	inputController.ProcessInputs(dt);
 	player.act();
 	player.getPhysicsComponent().updateState(dt);
-	player.updateSector();
+	player.updateSector(); // update player's grid for purpose of collision checking
 	camera.setPosition(player.getPhysicsComponent().position);
 	camera.setDirection(player.direction);
 	updateRound();
@@ -56,12 +56,15 @@ void Controller::updateStates(Camera &camera) {
 		for (unsigned int y = 0; y < map.objects[x].size(); ++y) {
 			Entity *currentObject = &map.objects[x][y];
 			
+			// Make cubes fall if round has ended
 			if (round.isActiveInter() && !currentObject->isGravityEnabled()) {
 				if (currentObject->get_block_ID() != blockVal && !currentObject->isDestroyed) {
 					currentObject->getPhysicsComponent().addComponent(&gravity);
 					currentObject->gravityEnabled = true;
 				}
 			}
+
+			// reset cube position and disable gravity on new round
 			else if (round.isActiveRound() && currentObject->isGravityEnabled()) {
 				if (!currentObject->isDestroyed) {
 					currentObject->getPhysicsComponent().removeComponent(&gravity);
@@ -92,6 +95,7 @@ void Controller::checkCollisions() {
 	CollisionController col(player);
 	col.checkCollisions(map);
 	player.isOnSurface = false;
+
 	while (col.unhandledCollisions()) {
 		CollisionEvent e = col.getCollisionEvent();
 
@@ -101,9 +105,11 @@ void Controller::checkCollisions() {
 		if (e.surfaceNormal.z == 1.0f) {
 			player.isOnSurface = true;
 		}
+		// halt x component of player if collision is on x plane
 		else if (e.surfaceNormal.x == 1.0f || e.surfaceNormal.x == -1.0f) {
 			player.getPhysicsComponent().velocity.x = 0.0f;
 		}
+		// halt y component of player if collision is on x plane
 		else if (e.surfaceNormal.y == 1.0f || e.surfaceNormal.y == -1.0f) {
 			player.getPhysicsComponent().velocity.y = 0.0f;
 		}
@@ -113,6 +119,7 @@ void Controller::checkCollisions() {
 
 void Controller::updateRound() {
 	round.updateState();
+
 	if (round.getRoundNumber() == 0) {
 		round.startRound();
 		prevBlockVal = blockVal;

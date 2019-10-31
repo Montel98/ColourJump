@@ -3,7 +3,7 @@
 
 // Shader sources
 // VERTEX SHADER
-const GLchar* vertexSource1 = R"glsl(
+const GLchar* vertexShaderSource = R"glsl(
     #version 150 core
     in vec3 position;
 	in vec3 normal;
@@ -22,7 +22,7 @@ const GLchar* vertexSource1 = R"glsl(
 )glsl";
 
 // FRAGMENT SHADER
-const GLchar* fragmentSource1 = R"glsl(
+const GLchar* fragmentShaderSource = R"glsl(
     #version 150 core
 	uniform vec3 blockColour;
 	uniform vec3 lightPos;
@@ -33,7 +33,7 @@ const GLchar* fragmentSource1 = R"glsl(
 
     void main()
     {	
-		float intensity = 5.0 / (5.0 + pow(length(lightPos - tPos), 1.0));
+		float intensity = 5.0 / (5.0 + pow(length(lightPos - tPos), 1.0)); // spotlight
 		float ambientMag = 0.1;
 		vec3 dir = normalize(lightPos - tPos);
 		vec3 resultLight =  blockColour * lightColour * (ambientMag + (intensity * max(dot(oNormal, dir), 0.0)));
@@ -49,19 +49,19 @@ SceneRenderer::SceneRenderer() {
 		std::cout << "Error: GLEW could not be initialised." << std::endl;
 	}
 
-	// Create Vertex Array Object
+	// Vertex Array Object
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
 	// Create and compile the vertex shader
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexSource1, NULL);
+	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 	glCompileShader(vertexShader);
 
 	// Create and compile the fragment shader
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentSource1, NULL);
+	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 	glCompileShader(fragmentShader);
 
 	// Link the vertex and fragment shader into a shader program

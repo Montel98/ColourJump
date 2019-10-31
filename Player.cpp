@@ -12,6 +12,7 @@ Player::Player(float xPos, float yPos, float zPos) : Entity(xPos, yPos, zPos), i
 	updateSector();
 }
 
+// Sectors are equal to the length of the block's sides (0.5)
 void Player::updateSector() {
 	sectorX = floor(getPhysicsComponent().position.x / 0.5f);
 	sectorY = floor(getPhysicsComponent().position.y / 0.5f);

@@ -7,13 +7,15 @@ WorldTime::WorldTime() : tStart(std::chrono::high_resolution_clock::now()), tPre
 	//
 }
 
+// Get the difference (dt) between the current and last recorded time
 float WorldTime::getDeltaTime() const {
 	float elapsed = getElapasedTime();
 	float dt = elapsed - tPrev;
-	tPrev = elapsed;
+	tPrev = elapsed; // Save current time as previous for next call
 	return dt;
 }
 
+// Get time passed since WorldTime was instantiated
 float WorldTime::getElapasedTime() const {
 	std::chrono::time_point<std::chrono::high_resolution_clock> tNow = std::chrono::high_resolution_clock::now();
 	float elapsed = std::chrono::duration_cast<std::chrono::duration<float>>(tNow - tStart).count();

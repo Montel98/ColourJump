@@ -8,8 +8,8 @@
 
 class Block : public Entity {
 private:
-	int block_ID;
-	Timer destructionTimer;
+	int block_ID; // Colour id of the block
+	Timer destructionTimer; // Timer to set delay before object destruction
 public:
 	Block(int, float, float, float, WorldTime&);
 	virtual int get_block_ID() const;
