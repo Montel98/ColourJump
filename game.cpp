@@ -33,11 +33,10 @@ extern std::map<int, std::string>colourNames = { {0, "BLUE"},
 void Controller::draw(Entity* entity, Camera& camera) {
 	glm::vec3 position = entity->getPhysicsComponent().position;
 	int id = entity->get_block_ID();
-	renderer.render(position, colours[id], camera);
-
+	cubeRenderer.render(position, colours[id], camera);
 }
 
-Controller::Controller(levelMap &mapLevel, Renderer &r, Player &p, InputController& ic, WorldTime& wt) : map(mapLevel), renderer(r), player(p), inputController(ic), time(wt), round(wt,4,4)  {
+Controller::Controller(levelMap &mapLevel, Player &p, InputController& ic, WorldTime& wt) : map(mapLevel), player(p), inputController(ic), time(wt), round(wt,4,4), cubeRenderer(scene)  {
 	roundNumber = 1;
 	blockVal = -1;
 }
@@ -49,35 +48,9 @@ void Controller::updateStates(Camera &camera) {
 	player.act();
 	player.getPhysicsComponent().updateState(dt);
 	player.updateSector();
-
 	camera.setPosition(player.getPhysicsComponent().position);
 	camera.setDirection(player.direction);
-
-	round.updateState();
-	if (round.getRoundNumber() == 0) {
-		round.startRound();
-		prevBlockVal = blockVal;
-		blockVal = rand() % 8;
-		std::cout << "ROUND " << round.getRoundNumber() << std::endl;
-		std::cout << colourNames[blockVal] << std::endl;
-	}
-	else {
-		if (round.isRoundFinished()) {
-			round.startInter();
-		}
-		else if (round.isInterFinished()) {
-			map.setRandomColours();
-			round.startRound();
-			prevBlockVal = blockVal;
-			blockVal = rand() % 6;
-			std::cout << "ROUND " << round.getRoundNumber() << std::endl;
-			std::cout << colourNames[blockVal] << std::endl;
-		}
-	}
-
-	//std::cout << "ACC: " << player.getPhysicsComponent().acceleration.x << "," << player.getPhysicsComponent().acceleration.y << "," << player.getPhysicsComponent().acceleration.z << std::endl;
-	//std::cout << "VEL: " << player.getPhysicsComponent().velocity.x << "," << player.getPhysicsComponent().velocity.y << "," << player.getPhysicsComponent().velocity.z << std::endl;
-	//std::cout << "POS: " << player.getPhysicsComponent().position.x << "," << player.getPhysicsComponent().position.y << "," << player.getPhysicsComponent().position.z << std::endl;
+	updateRound();
 
 	for (unsigned int x = 0; x < map.objects.size(); ++x) {
 		for (unsigned int y = 0; y < map.objects[x].size(); ++y) {
@@ -98,13 +71,24 @@ void Controller::updateStates(Camera &camera) {
 				}
 			}
 			
-			
 			currentObject->act();
 			currentObject->getPhysicsComponent().updateState(dt);
 		}
 	}
 
 	player.getPhysicsComponent().removeComponent(&gravity);
+	checkCollisions();
+
+	if (player.isOnSurface) {
+		player.getPhysicsComponent().removeComponent(&gravity);
+		player.getPhysicsComponent().velocity.z = 0.0f;
+	}
+	else {
+		player.getPhysicsComponent().addComponent(&gravity);
+	}
+}
+
+void Controller::checkCollisions() {
 	CollisionController col(player);
 	col.checkCollisions(map);
 	player.isOnSurface = false;
@@ -114,7 +98,6 @@ void Controller::updateStates(Camera &camera) {
 		if (e.entity->get_block_ID() != blockVal) {
 			e.entity->isDestroyed = true;
 		}
-
 		if (e.surfaceNormal.z == 1.0f) {
 			player.isOnSurface = true;
 		}
@@ -126,15 +109,33 @@ void Controller::updateStates(Camera &camera) {
 		}
 		col.popCollisionEvent();
 	}
+}
 
-	if (player.isOnSurface) {
-		player.getPhysicsComponent().removeComponent(&gravity);
-		player.getPhysicsComponent().velocity.z = 0.0f;
+void Controller::updateRound() {
+	round.updateState();
+	if (round.getRoundNumber() == 0) {
+		round.startRound();
+		prevBlockVal = blockVal;
+		blockVal = rand() % 8;
+		std::cout << "ROUND " << round.getRoundNumber() << std::endl;
+		std::cout << colourNames[blockVal] << std::endl;
 	}
 	else {
-		player.getPhysicsComponent().addComponent(&gravity);
+		if (round.isRoundFinished()) {
+			round.startInter();
+		}
+		else if (round.isInterFinished()) {
+			map.setRandomColours();
+			round.startRound();
+			prevBlockVal = blockVal;
+			blockVal = rand() % 8;
+			std::cout << "ROUND " << round.getRoundNumber() << std::endl;
+			std::cout << colourNames[blockVal] << std::endl;
+		}
 	}
+}
 
+void Controller::drawScene(Camera &camera) {
 	for (unsigned int x = 0; x < map.objects.size(); ++x) {
 		for (unsigned int y = 0; y < map.objects[x].size(); ++y) {
 			Entity *current_object = &map.objects[x][y];
