@@ -8,7 +8,7 @@
 
 class Round {
 private:
-	int roundNumber;
+	int roundNumber; // Current round number
 
 	bool activeRound;
 	bool activeInter;
@@ -16,8 +16,8 @@ private:
 	bool interFinished;
 
 	float roundDuration;
-	float interDuration;
-	float durationFactor;
+	float interDuration; // Intermission duration
+	float durationFactor; // Factor by which round duration decreases each cycle
 public:
 	Timer roundTimer;
 	Timer interTimer;

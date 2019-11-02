@@ -14,7 +14,7 @@ public:
 
 	Entity(float, float, float);
 	physicsComponent state;
-	CollisionBox cBox;
+	CollisionBox cBox; // The collision bounds for the entity
 	virtual void act() = 0;
 	virtual int get_block_ID() const = 0;
 	bool isGravityEnabled() { return gravityEnabled; }

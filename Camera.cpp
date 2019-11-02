@@ -7,26 +7,28 @@ Camera::Camera(glm::vec3 position, glm::vec3 facing, glm::vec3 upwards) : pos(po
 	sensitivity = 0.002f;
 }
 
+// Rotate camera about "horizontal" axis perpendicular to player's line of site
 void Camera::rotateH(float angle) {
 	glm::mat4 rot = glm::rotate(glm::mat4(1.0f), (-1 * angle), up);
-	glm::vec4 bla1(direction, 1);
-	bla1 = rot * bla1;
+	glm::vec4 dir4(direction, 1);
+	dir4 = rot * dir4;
 
-	direction.x = bla1.x;
-	direction.y = bla1.y;
-	direction.z = bla1.z;
+	direction.x = dir4.x;
+	direction.y = dir4.y;
+	direction.z = dir4.z;
 
 	looking = pos + direction;
 }
 
+// Rotate camera about "verticle" axis perpendicular to player's line of site
 void Camera::rotateV(float angle) {
 	glm::mat4 rot = glm::rotate(glm::mat4(1.0f), (-1 * angle), glm::cross(direction, up));
-	glm::vec4 bla(direction, 1);
-	bla = rot * bla;
+	glm::vec4 dir4(direction, 1);
+	dir4 = rot * dir4;
 
-	direction.x = bla.x;
-	direction.y = bla.y;
-	direction.z = bla.z;
+	direction.x = dir4.x;
+	direction.y = dir4.y;
+	direction.z = dir4.z;
 
 	looking = pos + direction;
 }

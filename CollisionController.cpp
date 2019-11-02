@@ -135,6 +135,7 @@ void CollisionController::checkCollisions(levelMap& map) {
 	}
 }
 
+// Verifies if position correction does not result in another collision
 bool CollisionController::isValidCollision(Entity* entity, Overlap& overlap) {
 	glm::vec3 temp = player.getPhysicsComponent().position;
 	bool isValid;

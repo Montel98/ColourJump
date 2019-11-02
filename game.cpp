@@ -3,37 +3,12 @@
 #include "game.h"
 
 extern glm::vec3 normalForce(0.0f, 0.0f, 9.8f);
-extern glm::vec3 gravity(0.0f, 0.0f, -9.8f);
-extern glm::vec3 blue(0, 0, 1);
-extern glm::vec3 green(0, 1, 0);
-extern glm::vec3 red(1, 0, 0);
-extern glm::vec3 yellow(1, 1, 0);
-extern glm::vec3 aqua(0.0f, 1.0f, 0.78f);
-extern glm::vec3 purple(0.55f, 0.0f, 1.0f);
-
-extern std::map<int, glm::vec3>colours = { {0, glm::vec3(0, 0, 1)},
-											{1, glm::vec3(0, 1, 0)},
-											{2, glm::vec3(1, 0, 0)},
-											{3, glm::vec3(1, 1, 0)},
-											{4, glm::vec3(0.0f, 1.0f, 0.78f)},
-											{5, glm::vec3(0.55f, 0.0f, 1.0f)},
-											{6, glm::vec3(1.0f, 0.6f, 0.0f)},
-											{7, glm::vec3(1.0f, 1.0f, 1.0f)} };
-
-extern std::map<int, std::string>colourNames = { {0, "BLUE"},
-												{1, "GREEN"},
-												{2, "RED"},
-												{3, "YELLOW"},
-												{4, "AQUA"},
-												{5, "PURPLE"},
-												{6, "ORANGE"},
-												{7, "WHITE"} };
-												
+extern glm::vec3 gravity(0.0f, 0.0f, -9.8f);											
 
 void Controller::draw(Entity* entity, Camera& camera) {
 	glm::vec3 position = entity->getPhysicsComponent().position;
 	int id = entity->get_block_ID();
-	cubeRenderer.render(position, colours[id], camera);
+	cubeRenderer.render(position, Block::colourValues[id].first, camera);
 }
 
 Controller::Controller(levelMap &mapLevel, Player &p, InputController& ic, WorldTime& wt) : map(mapLevel), player(p), inputController(ic), time(wt), round(wt,4,4), cubeRenderer(scene)  {
@@ -124,8 +99,8 @@ void Controller::updateRound() {
 		round.startRound();
 		prevBlockVal = blockVal;
 		blockVal = rand() % 8;
-		std::cout << "ROUND " << round.getRoundNumber() << std::endl;
-		std::cout << colourNames[blockVal] << std::endl;
+		//std::cout << "ROUND " << round.getRoundNumber() << std::endl;
+		//std::cout << colourNames[blockVal] << std::endl;
 	}
 	else {
 		if (round.isRoundFinished()) {
@@ -136,8 +111,8 @@ void Controller::updateRound() {
 			round.startRound();
 			prevBlockVal = blockVal;
 			blockVal = rand() % 8;
-			std::cout << "ROUND " << round.getRoundNumber() << std::endl;
-			std::cout << colourNames[blockVal] << std::endl;
+			//std::cout << "ROUND " << round.getRoundNumber() << std::endl;
+			//std::cout << colourNames[blockVal] << std::endl;
 		}
 	}
 }

@@ -26,10 +26,10 @@ private:
 	SceneRenderer scene;
 	CubeRenderer cubeRenderer;
 	Round round;
-	float dt;
+	float dt; // Small change in time for motion calculations
 	int roundNumber;
-	int blockVal;
-	int prevBlockVal;
+	int blockVal; // Colour of blocks to fall
+	int prevBlockVal; // Previous colour of blocks that fell
 
 public:
 	Controller(levelMap&, Player&, InputController&, WorldTime&);

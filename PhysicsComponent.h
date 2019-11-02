@@ -13,7 +13,7 @@ public:
 	glm::vec3 acceleration;
 public:
 	void updateState(float dt);
-	std::vector<glm::vec3*> components;
+	std::vector<glm::vec3*> components; // Acceleration components at a specific instant
 	void addComponent(glm::vec3*);
 	void removeComponent(glm::vec3*);
 

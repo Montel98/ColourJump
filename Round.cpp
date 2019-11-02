@@ -27,7 +27,7 @@ bool Round::isInterFinished() {
 }
 
 void Round::startRound() {
-	roundDuration *= durationFactor;
+	roundDuration *= durationFactor; // Shorten round
 	roundTimer.setDuration(roundDuration);
 	roundTimer.reset();
 	roundTimer.Start();

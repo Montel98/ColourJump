@@ -5,6 +5,7 @@
 
 #define TILE_SIZE 2
 
+// Populate map with blocks
 levelMap::levelMap(int size, WorldTime &wt) : dimension(size) {
 	int colour;
 	for (int x = 0; x < size; ++x) {
@@ -19,6 +20,8 @@ levelMap::levelMap(int size, WorldTime &wt) : dimension(size) {
 	setRandomColours();
 }
 
+// Set colours of each tile
+// Each tile has an area of TILE_SIZE * TILE_SIZE
 void levelMap::setRandomColours() {
 	for (int x = 0; x < dimension; x += TILE_SIZE) {
 		for (int y = 0; y < dimension; y += TILE_SIZE) {

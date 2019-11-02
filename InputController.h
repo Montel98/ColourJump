@@ -23,8 +23,6 @@ public:
 	bool isWalking;
 	glm::vec3 jumping;
 	glm::vec3 vel;
-	glm::vec3 lastDir;
-	float cameraBobPos;
 	float start;
 	float vMag;
 };

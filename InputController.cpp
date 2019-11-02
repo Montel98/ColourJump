@@ -1,7 +1,7 @@
 #pragma once
 #include "InputController.h"
 
-InputController::InputController(Player &player, Camera &camera) : player(player), camera(camera), jumping(0.0f, 0.0f, 40.0), vel(0.0f), vMag(0.0f), lastDir(0.0f) {
+InputController::InputController(Player &player, Camera &camera) : player(player), camera(camera), jumping(0.0f, 0.0f, 40.0), vel(0.0f), vMag(0.0f) {
 	release = false;
 }
 

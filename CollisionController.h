@@ -18,9 +18,9 @@ struct Overlap {
 
 class CollisionEvent {
 public:
-	glm::vec3 surfaceNormal;
+	glm::vec3 surfaceNormal; // Vector perpendicular to collision face
 	glm::vec3 displacement;
-	Entity* entity;
+	Entity* entity; // Entity that collided with player
 	CollisionEvent(Entity*, glm::vec3);
 };
 
@@ -29,10 +29,10 @@ private:
 	Player &player;
 	bool isCollision(Entity*);
 	void handleCollision(Entity*);
-	Overlap getMinOverlap(Entity*);
+	Overlap getMinOverlap(Entity*); // Gets the axis with min overlap between the bounding boxes
 	glm::vec3 getSurfaceNormal(Entity*, Overlap&);
-	bool isValidCollision(Entity*, Overlap&);
-	std::queue<CollisionEvent> collisions;
+	bool isValidCollision(Entity*, Overlap&); // Checks if corrected position does not result in another collsion
+	std::queue<CollisionEvent> collisions; // Queue of collision events with player
 public:
 	CollisionController(Player&);
 	void checkCollisions(levelMap&);
