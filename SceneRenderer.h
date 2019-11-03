@@ -15,6 +15,7 @@ private:
 	GLuint uniView, uniProj, uniModel, uniLightPos, uniLightColour; // Handles to all shader uniforms
 	GLuint vertexShader, fragmentShader;
 	GLuint shaderProgram; // Handle to shader program
+	GLuint viewingPos;
 	glm::vec3 lightPos, lightColour;
 	glm::mat4 proj, model; // Model and projection matrices
 

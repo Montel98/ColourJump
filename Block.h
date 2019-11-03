@@ -15,6 +15,7 @@ using std::string;
 
 class Block : public Entity {
 private:
+	glm::vec3 gravity;
 	int block_ID; // Colour id of the block
 	Timer destructionTimer; // Timer to set delay before object destruction
 public:

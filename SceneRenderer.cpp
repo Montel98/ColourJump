@@ -27,16 +27,26 @@ const GLchar* fragmentShaderSource = R"glsl(
 	uniform vec3 blockColour;
 	uniform vec3 lightPos;
 	uniform vec3 lightColour;
+	uniform vec3 viewingPos;
 	in vec3 oNormal;
 	in vec3 tPos;
 	out vec4 outColour;
 
     void main()
     {	
-		float intensity = 5.0 / (5.0 + pow(length(lightPos - tPos), 1.0)); // spotlight
+		float intensity = 5.0 / (5.0 + pow(length(lightPos - tPos), 2.0)); // spotlight
 		float ambientMag = 0.1;
+		float specularIntensity = 0.4;
 		vec3 dir = normalize(lightPos - tPos);
-		vec3 resultLight =  blockColour * lightColour * (ambientMag + (intensity * max(dot(oNormal, dir), 0.0)));
+		vec3 reflectDir = vec3(-1.0 * dir.x, -1.0 * dir.y, dir.z);
+		//vec3 Ny = max(dot(oNormal, dir), 0.0) * oNormal;
+		//vec3 Nx = length( dir - (max(dot(oNormal, dir), 0.0) * oNormal)) * normalize(cross(oNormal, cross(oNormal, dir)));
+		//vec3 reflectDir = Ny - Nx;
+		vec3 playerDir = normalize(viewingPos - tPos);
+
+		float specularMag = specularIntensity * pow(max(dot(playerDir, reflectDir), 0.0), 64.0);
+
+		vec3 resultLight =  blockColour * lightColour * (ambientMag + (intensity * specularMag) + (intensity * max(dot(oNormal, dir), 0.0)));
         outColour = vec4(resultLight, 1.0);
     }
 )glsl";
@@ -93,6 +103,8 @@ SceneRenderer::SceneRenderer() {
 	lightColour = glm::vec3(1.0f, 1.0f, 1.0f);
 	uniLightColour = glGetUniformLocation(shaderProgram, "lightColour");
 	glUniform3fv(uniLightColour, 1, glm::value_ptr(lightColour));
+
+	viewingPos = glGetUniformLocation(shaderProgram, "viewingPos");
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);

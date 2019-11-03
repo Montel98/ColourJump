@@ -81,6 +81,8 @@ void CubeRenderer::render(const glm::vec3 &position, const glm::vec3 &color, con
 
 	glUniformMatrix4fv(sceneRenderer.uniView, 1, GL_FALSE, glm::value_ptr(view));
 
+	glUniform3fv(sceneRenderer.viewingPos, 1, glm::value_ptr(camera.pos));
+
 	glUniform3f(uniColour, color.r, color.g, color.b); // Set block colour
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	sceneRenderer.model = glm::mat4(1.0f); // Reset to identity matrix for next object
